@@ -23,13 +23,6 @@ export default function DashboardPage() {
     linkDiscord,
     unlinkDiscord,
   } = usePrivy();
-
-  useEffect(() => {
-    if (ready && !authenticated) {
-      router.push('/');
-    }
-  }, [ready, authenticated, router]);
-
   const numAccounts = user?.linkedAccounts?.length || 0;
   const canRemoveAccount = numAccounts > 1;
 
@@ -40,6 +33,12 @@ export default function DashboardPage() {
   const googleSubject = user?.google?.subject || null;
   const twitterSubject = user?.twitter?.subject || null;
   const discordSubject = user?.discord?.subject || null;
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      router.push('/');
+    }
+  }, [ready, authenticated, router]);
 
   return (
     <>
