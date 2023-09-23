@@ -16,8 +16,11 @@
     "@heroicons/react": "^2.0.12",
     "@privy-io/react-auth": "1.30.2",
     "@tailwindcss/forms": "^0.5.3",
+    "axios": "^1.5.0",
     "next": "latest",
-    "react": "18.2.0"
+    "openai": "^4.10.0",
+    "react": "18.2.0",
+    "twilio": "^4.18.0"
   },
   "devDependencies": {
     "@tsconfig/node16-strictest-esm": "^1.0.3",
