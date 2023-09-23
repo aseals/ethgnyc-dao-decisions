@@ -4,67 +4,27 @@ import axios from 'axios';
 const Survey: React.FC = () => {
   const [question, setQuestion] = useState<string>('');
   const [apiQuestion, setApiQuestion] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Array<{ role: string, content: string }>>([{
-    role: 'system',
-    content: 'You are an expert in identifying underlying motivations and designing questions to expose value and bias from users...'
-  }]);
+  const [messages, setMessages] = useState<any[]>([
+    { role: "system", content: "You are an expert in identifying underlying motivations and designing questions to expose value and bias from users. When prompted with a question, you can create insightful, value-oriented, abstract questions for decision-making; particularly questions that can elicit yes-or-no responses while unveiling implicit or unrecognized values. Please create such questions for the first user's input and tag each question with the value it's meant to evaluate. Please ask the questions one at a time, and after each yes or no response, you can ask another question to learn more about the user. Just ask one question at a time please. Return the qeustion as structured json data, with the value as the key and the question as the value. For example: {\"value\": \"fairness\",\"question\": \"an example question?\" \}." },
+  ]);
 
   const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setMessages([...messages, { role: 'user', content: question }]);
-    const res = await axios.post('/api/gpt4', { messages });
-    const newMessage = res.data.answer.content;
-    setApiQuestion(newMessage);
-    setMessages([...messages, { role: 'assistant', content: newMessage }]);
+      const newMessages = [...messages, { role: 'user', content: question }];
+           console.log(`submitting with messages: ${newMessages.map((message) => message.role + " " + message.content)}`);
+      const res = await axios.post('/api/gpt4', { messages: newMessages });
+      const responseMessage = res.data.answer;
+      console.log(`got reponse: ${responseMessage}`);
+      setApiQuestion(responseMessage);
+    setMessages([...newMessages, { role: 'assistant', content: responseMessage }]);
   };
 
-  const handleResponse = (response: string): void => {
-    setMessages([...messages, { role: 'user', content: response }]);
-    // Make a new API call here to continue the conversation
-  };
-
- return (
-  <div>
-    <h1>Survey</h1>
-    <input
-      type="text"
-      value={question}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => setQuestion(e.target.value)}
-    />
-    <button onClick={handleSubmit}>Submit</button>
-
-    {apiQuestion && (
-      <div>
-        <h2>{apiQuestion}</h2>
-        <button onClick={() => handleResponse('Yes')}>Yes</button>
-        <button onClick={() => handleResponse('No')}>No</button>
-      </div>
-    )}
-  </div>
-);
-};
-export default Survey;
-
-/*
-import { useState, ChangeEvent, MouseEvent } from 'react';
-import axios from 'axios';
-
-const Survey: React.FC = () => {
-  const [question, setQuestion] = useState<string>(''); // Your decision question
-  const [apiQuestion, setApiQuestion] = useState<string | null>(null); // Question from OpenAI
-
-  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-      // Call your OpenAI API
-    console.log(`Submitting question: ${question}`);
-    const res = await axios.post('/api/gpt4', { question });
-    setApiQuestion(res.data.answer);
-  };
-
-  const handleResponse = (response: string): void => {
-    // Handle 'Yes'/'No' button clicks
-    console.log(`User responded with ${response}`);
-    // Here you can send the response back to your server or whatever you want to do next
+  const handleResponse = async (response: string): Promise<void> => {
+    const newMessages = [...messages, { role: "user", content: response }];
+      const res = await axios.post('/api/gpt4', { messages: newMessages });
+      const responseMessage = res.data.answer;
+    setApiQuestion(responseMessage);
+    setMessages([...newMessages, { role: "assistant", content: responseMessage }]);
   };
 
   return (
@@ -76,7 +36,6 @@ const Survey: React.FC = () => {
         onChange={(e: ChangeEvent<HTMLInputElement>) => setQuestion(e.target.value)}
       />
       <button onClick={handleSubmit}>Submit</button>
-
       {apiQuestion && (
         <div>
           <h2>{apiQuestion}</h2>
@@ -89,4 +48,3 @@ const Survey: React.FC = () => {
 };
 
 export default Survey;
-*/
